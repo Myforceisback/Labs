@@ -61,7 +61,7 @@ public class LW_UI extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 true, true, true, false
@@ -183,12 +183,20 @@ public class LW_UI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+ public class ExceptionforRecIntegral extends Exception{
+
+    public ExceptionforRecIntegral(String description){
+        super(description);
+    }
+    
+ }
+    
 ArrayList<RecIntegral> digits = new ArrayList<RecIntegral>();
 public class RecIntegral{
   
     public double Top, Bottom, Step, Res;
     
-    public RecIntegral(double bottom, double top, double step){
+    RecIntegral(double bottom, double top, double step){
         this.Top = top;
         this.Bottom = bottom;
         this.Step = step;
@@ -227,17 +235,25 @@ public double integr(double nij, double verh, double step){
         // TODO add your handling code here:
         //Кнопка добаить
         Vector data = new Vector();
-        double a = Double.valueOf(jTextField1.getText()).doubleValue();
-        double b = Double.valueOf(jTextField2.getText()).doubleValue();
-        double c = Double.valueOf(jTextField3.getText()).doubleValue();
-        data.add(a);
-        data.add(b);
-        data.add(c);
         DefaultTableModel tbl = (DefaultTableModel)jTable1.getModel();
-        tbl.addRow(data);
-        RecIntegral save = new RecIntegral(a,b,c);
-        digits.add(save);
-        
+        try{
+            double a = Double.valueOf(jTextField1.getText()).doubleValue();
+            double b = Double.valueOf(jTextField2.getText()).doubleValue();
+            double c = Double.valueOf(jTextField3.getText()).doubleValue();
+            data.add(a);
+            data.add(b);
+            data.add(c);
+            if(a < 0.000001  || b < 0.000001 || c < 0.000001 || a > 1000000 || b > 1000000 || c > 1000000){
+                throw new ExceptionforRecIntegral("Data entered incorrectly");
+            }
+            tbl.addRow(data);
+            RecIntegral save =  new RecIntegral(a,b,c);
+            digits.add(save);
+        }
+        catch(ExceptionforRecIntegral e){
+           e.printStackTrace();
+        }
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -246,6 +262,7 @@ public double integr(double nij, double verh, double step){
         DefaultTableModel tbl = (DefaultTableModel)jTable1.getModel();
         int indexROW = jTable1.getSelectedRow();
         tbl.removeRow(indexROW);
+        digits.remove(indexROW);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -270,8 +287,6 @@ public double integr(double nij, double verh, double step){
         // TODO add your handling code here:
         // Очистить
         DefaultTableModel tbl = (DefaultTableModel)jTable1.getModel();
-        System.out.println(digits.get(0).Bottom);
-        
         for (int i = tbl.getRowCount(); i > 0; i--){
             tbl.removeRow(i-1);
         }
